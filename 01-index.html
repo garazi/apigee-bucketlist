@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>jQuery Mobile Page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link rel="stylesheet" href="css/font/roboto-regular.css" />
+
+    <!-- jQueryMobileCSS - original with styling -->
+    <link rel="stylesheet" href="css/jquery.mobile-1.3.1.min.css" />
+
+    <!-- jQueryMobileCSS - original without styling -->
+    <!-- <link rel="stylesheet" href="css/jquery.mobile.structure-1.3.1.min.css" /> -->
+
+    <!-- Custom styling including overrides to the jQueryMobile structure CSS -->
+    <!-- <link href="css/bucketlist.css" rel="stylesheet"> -->
+
+    <!-- jQuery and jQueryMobile libraries -->
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/jquery.mobile-1.3.1.min.js"></script>
+</head>
+
+<body>
+    <section id="page-main" data-role="page">
+        <header id="header-mylist" data-role="header" data-position="fixed" data-theme="a">
+            <a id="btn-new" data-role="button" data-icon="plus" data-iconpos="right" data-inline="true" href="#page-add" class="ui-btn-right">New</a>
+            <h1>My Bucket List</h1>
+        </header>
+        <!-- /header -->
+        <article data-role="content" id="contentlist">
+            <ul data-role="listview" id="bucketlist" class="mybucketlist">
+                <li><a href="#page-add">My first bucketlist item</a></li>
+                <li><a href="#page-add">Another bucklist item</a></li>
+                <li><a href="#page-add">A third thing on my bucketlist</a></li>
+            </ul>
+        </article>
+        <!-- /content -->
+        <footer data-role="footer" data-position="fixed" id="app-nav">
+            <div data-role="navbar" data-iconpos="top" data-theme="c">
+                <ul>
+                    <li>
+                        <a id="btn-load-mylist" href="#page-main" data-transition="fade" data-theme="c" data-icon="edit">
+                      My List
+                  </a>
+                    </li>
+                    <li>
+                        <a id="btn-load-inspiration" href="#page-main" data-transition="fade" data-theme="c" data-icon="list">
+                      Inspiration
+                  </a>
+                    </li>
+                </ul>
+            </div>
+        </footer>
+        <!-- /footer -->
+    </section>
+    <section id="page-add" data-role="page" data-add-back-btn="true" >
+        <header data-role="header" data-theme="a">
+            <h1>Add Item</h1>
+        </header>
+        <!-- /header -->
+        <article data-role="content">
+            <form action="" id="form-add-item" class="" style="">
+                <label for="form-title">What do you <em>have</em> to do before you die?</label>
+                <input id="form-title" type="text" placeholder="I am going to..." />
+                <label for="form-desc">More Info:</label>
+                <textarea name="" id="form-desc" placeholder="Add any additional information here..."></textarea>
+                <input id="form-uuid" type="hidden" />
+                <a id="btn-cancel" data-role="button" data-icon="delete" href="#page-main">Cancel</a>
+                <a id="btn-submit" data-role="button" data-icon="plus" href="#page-main">Submit</a>
+            </form>
+        </article>
+        <!-- /content -->
+    </section>
+</body>
+
+</html>
