@@ -70,7 +70,7 @@
         $('#form-login-user').on('click', '#btn-submit', login);
         $('#header-mylist').on('click', '#btn-logout', function() {
             client.logout();
-            $('#btn-submit').removeClass('hideaway');
+            $('#form-login-user #btn-submit').removeClass('hideaway');
         })
 
         function createUser() {
@@ -258,7 +258,8 @@
                 if (err) {
                     alert("Unable to delete item");
                 } else {
-                    console.log('SUCCESS');
+                    console.log('Connection deleted');
+                    loadItems();
                     window.location = "#page-main";
                 }
             });
