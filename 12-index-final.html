@@ -32,7 +32,7 @@
         var appUser;
 
         var client = new Apigee.Client({
-            orgName: 'yourorgname', // Your Apigee.com username for App Services
+            orgName: 'garazi', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
         });
 
@@ -40,8 +40,7 @@
             "client": client,
             "type": "items",
             "qs": {
-                "limit": 100,
-                "ql": "order by title"
+                "limit": 100
             }
         });
 
@@ -52,7 +51,29 @@
                 "limit": 25,
                 "ql": "order by title"
             }
-        })
+        });
+
+        navigator.geolocation.getCurrentPosition(geoSuccess, geoFailure);
+
+        function geoSuccess(e) {
+            console.log(e)
+            my_location = e.coords;
+            console.log("lat: " + my_location.latitude);
+            console.log("lon: " + my_location.longitude);
+            items = new Apigee.Collection({
+                "client": client,
+                "type": "items",
+                "qs": {
+                    "limit": 100,
+                    "ql": "not location.latitude='*' OR location within 150000 of " + my_location.latitude + "," + my_location.longitude
+                }
+            });
+
+        }
+
+        function geoFailure() {
+            alert("Unable to access your geolocation");
+        }
 
         client.getLoggedInUser(function(err, data, user) {
             if (err) {
@@ -89,9 +110,8 @@
             };
             client.request(options, function(err, data) {
                 if (err) {
-                    console.log('FAIL')
+                    alert('Could not create the user');
                 } else {
-                    console.log('SUCCESS');
                     login(username, password);
                     $("#form-new-username").val('');
                     $("#form-new-password").val('');
@@ -206,39 +226,39 @@
         });
 
         $('#bucketlist').on('click', 'a', function(e) {
-            if($('#bucketlist').hasClass('masterList')) {
+            if ($('#bucketlist').hasClass('masterList')) {
                 var options = {
-                            "type": "items",
-                            "uuid": $(this).attr('data-uuid')
+                    "type": "items",
+                    "uuid": $(this).attr('data-uuid')
+                }
+                client.getEntity(options, function(error, response) {
+                    appUser.connect("myitems", response, function(error, data) {
+                        if (error) {
+                            alert("error!");
+                        } else {
+                            loadItems(myList);
+                            console.log('did it')
                         }
-                        client.getEntity(options, function(error, response) {
-                            appUser.connect("myitems", response, function(error, data) {
-                                if (error) {
-                                    alert("error!");
-                                } else {
-                                    loadItems(myList);
-                                    console.log('did it')
-                                }
-                            });
-                        });
-                        return false;
+                    });
+                });
+                return false;
             } else {
-            var options = {
-                "type": "items",
-                "uuid": $(this).attr('data-uuid')
-            };
-            client.getEntity(options, function(error, response) {
-                var title = response.get('title');
-                var desc = response.get('desc');
-                var completedby = response.get('completedby');
-                $('#form-title').val(title);
-                $('#form-desc').val(desc);
-                $('#form-uuid').val(options.uuid);
-                $('#form-completedby').val(completedby);
-            });
-            $('#btn-submit, #btn-cancel').addClass('hideaway');
-            $('#btn-did-it, #btn-forget-it').removeClass('hideaway');
-        }
+                var options = {
+                    "type": "items",
+                    "uuid": $(this).attr('data-uuid')
+                };
+                client.getEntity(options, function(error, response) {
+                    var title = response.get('title');
+                    var desc = response.get('desc');
+                    var completedby = response.get('completedby');
+                    $('#form-title').val(title);
+                    $('#form-desc').val(desc);
+                    $('#form-uuid').val(options.uuid);
+                    $('#form-completedby').val(completedby);
+                });
+                $('#btn-submit, #btn-cancel').addClass('hideaway');
+                $('#btn-did-it, #btn-forget-it').removeClass('hideaway');
+            }
         });
         $('#header-mylist').on('click', '#btn-new', function() {
             $('#btn-submit, #btn-cancel').removeClass('hideaway');
@@ -285,11 +305,11 @@
             });
         });
 
-        $('#app-nav').on('click', '#btn-load-inspiration', function () {
+        $('#app-nav').on('click', '#btn-load-inspiration', function() {
             loadItems(items);
             $('#bucketlist').addClass('masterList');
         });
-        $('#app-nav').on('click', '#btn-load-mylist', function () {
+        $('#app-nav').on('click', '#btn-load-mylist', function() {
             loadItems(myList);
             $('.masterList').removeClass('masterList');
         });

@@ -32,7 +32,7 @@
         var appUser;
 
         var client = new Apigee.Client({
-            orgName: 'yourorgname', // Your Apigee.com username for App Services
+            orgName: 'garazi', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
         });
 
@@ -65,7 +65,7 @@
                 "type": "items",
                 "qs": {
                     "limit": 100,
-                    "ql": "not location.latitude='*' or location within 1500000 of " + my_location.latitude + "," + my_location.longitude
+                    "ql": "location within 150000 of " + my_location.latitude + "," + my_location.longitude
                 }
             });
 
@@ -91,7 +91,7 @@
         $('#form-login-user').on('click', '#btn-submit', login);
         $('#header-mylist').on('click', '#btn-logout', function() {
             client.logout();
-            $('#btn-submit').removeClass('hideaway');
+            $('#form-login-user #btn-submit').removeClass('hideaway');
         })
 
         function createUser() {
@@ -110,9 +110,8 @@
             };
             client.request(options, function(err, data) {
                 if (err) {
-                    console.log('FAIL')
+                    alert('Could not create the user');
                 } else {
-                    console.log('SUCCESS');
                     login(username, password);
                     $("#form-new-username").val('');
                     $("#form-new-password").val('');
@@ -161,23 +160,23 @@
 
         // loadItems();
 
-        function loadItems(e) {
-            e.fetch(
+        function loadItems(collection) {
+            collection.fetch(
                 function(err, data) { // Success
                     if (err) {
                         alert("Read failed - loading offline data");
-                        e = client.restoreCollection(localStorage.getItem(e));
-                        e.resetEntityPointer();
+                        collection = client.restoreCollection(localStorage.getItem(collection));
+                        collection.resetEntityPointer();
                         $('#bucketlist').empty();
-                        while (e.hasNextEntity()) {
-                            var item = e.getNextEntity();
+                        while (collection.hasNextEntity()) {
+                            var item = collection.getNextEntity();
                             $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
                         }
                         $('#bucketlist').listview('refresh');
                     } else {
                         $('#bucketlist').empty();
-                        while (e.hasNextEntity()) {
-                            var item = e.getNextEntity();
+                        while (collection.hasNextEntity()) {
+                            var item = collection.getNextEntity();
                             $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
                             var lookup = item.get('completedby');
                             if ((lookup) && (lookup.indexOf(appUser.get('uuid')) > -1)) {
@@ -187,7 +186,7 @@
                         $('.masterList li').attr('data-icon', 'expand-alt');
                         $('.masterList li.done').addClass('hideaway');
                         $('#bucketlist').listview('refresh');
-                        localStorage.setItem(e, e.serialize());
+                        localStorage.setItem(collection, collection.serialize());
                     }
                 });
         }
