@@ -32,7 +32,7 @@
         var appUser;
 
         var client = new Apigee.Client({
-            orgName: 'yourorgname', // Your Apigee.com username for App Services
+            orgName: 'garazi', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
         });
 
@@ -40,18 +40,84 @@
             "client": client,
             "type": "items",
             "qs": {
-                "limit": 100
-            }
-        });
-
-        var myList = new Apigee.Collection({
-            "client": client,
-            "type": "users/me/myitems",
-            "qs": {
                 "limit": 25,
                 "ql": "order by title"
             }
         });
+
+        client.getLoggedInUser(function(err, data, user) {
+            if (err) {
+                //error - could not get logged in user
+                window.location = "#page-login";
+            } else {
+                if (client.isLoggedIn()) {
+                    appUser = user;
+                }
+            }
+        });
+
+        $('#form-add-user').on('click', '#btn-submit', createUser);
+        $('#form-login-user').on('click', '#btn-submit', login);
+        $('#header-mylist').on('click', '#btn-logout', function() {
+            client.logout();
+        });
+        $('form').on('click', '#btn-clear', function () {
+            $('input').val('');
+        });
+
+        function createUser() {
+            var fullname = $("#form-new-fullname").val();
+            var username = $("#form-new-username").val();
+            var password = $("#form-new-password").val();
+            var email = $("#form-new-email").val();
+            client.signup(username, password, email, fullname, function(err, data) {
+                if (err) {
+                    console.log('FAIL')
+                } else {
+                    console.log('SUCCESS');
+                    login(username, password);
+                    $("#form-new-username").val('');
+                    $("#form-new-password").val('');
+                    $("#form-new-password").val('');
+                    $("#form-new-email").val('');
+                }
+            });
+        }
+
+        function login(username, password) {
+            $('#login-section-error').html('');
+            if (username && password) { // only if the user has just signed up
+                var username = username;
+                var password = password;
+            } else {
+                var username = $("#form-username").val();
+                var password = $("#form-password").val();
+            }
+            client.login(username, password,
+                function(err) {
+                    if (err) {
+                        $('#login-section-error').html('There was an error logging you in.');
+                        console.log(err)
+                    } else {
+                        //login succeeded
+                        client.getLoggedInUser(function(err, user) {
+                            if (err) {
+                                //error - could not get logged in user
+                            } else {
+                                if (client.isLoggedIn()) {
+                                    appUser = user;
+                                }
+                            }
+                        });
+                        //clear out the login form so it is empty if the user chooses to log out
+                        $("#form-username").val('');
+                        $("#form-password").val('');
+
+                        window.location = "#page-main";
+                    }
+                }
+            );
+        }
 
         navigator.geolocation.getCurrentPosition(geoSuccess, geoFailure);
 
@@ -65,9 +131,10 @@
                 "type": "items",
                 "qs": {
                     "limit": 100,
-                    "ql": "location within 15000000 of " + my_location.latitude + "," + my_location.longitude
+                    "ql": "location within 1500000 of " + my_location.latitude + "," + my_location.longitude
                 }
             });
+            loadItems();
         }
 
         function geoFailure() {
@@ -75,129 +142,44 @@
 
             // The following is just for testing locally in Chrome
             // that doesn't support geolocation from a file:// address
-            my_location = {"latitude":"32.12345", "longitude": "-127.12345"}
+            my_location = {
+                "latitude":"35.123456",
+                "longitude": "-120.987654"
+            }
             items = new Apigee.Collection({
                 "client": client,
                 "type": "items",
                 "qs": {
                     "limit": 100,
-                    "ql": "location within 15000000 of " + my_location.latitude + "," + my_location.longitude
+                    "ql": "location within 1500000 of " + my_location.latitude + "," + my_location.longitude
                 }
             });
-        }
-
-        client.getLoggedInUser(function(err, data, user) {
-            if (err) {
-                //error - could not get logged in user
-                window.location = "#page-login";
-            } else {
-                if (client.isLoggedIn()) {
-                    appUser = user;
-                    loadItems(myList);
-                }
-            }
-        });
-
-        $('#form-add-user').on('click', '#btn-submit', createUser);
-        $('#form-login-user').on('click', '#btn-submit', login);
-        $('#header-mylist').on('click', '#btn-logout', function() {
-            client.logout();
-            $('#form-login-user #btn-submit').removeClass('hideaway');
-        })
-
-        function createUser() {
-            var username = $("#form-new-username").val();
-            var password = $("#form-new-password").val();
-            var options = {
-                method: 'POST',
-                endpoint: 'users',
-                body: {
-                    "name": username,
-                    "email": "",
-                    "username": username,
-                    "password": password,
-
-                }
-            };
-            client.request(options, function(err, data) {
-                if (err) {
-                    alert('Could not create the user');
-                } else {
-                    login(username, password);
-                    $("#form-new-username").val('');
-                    $("#form-new-password").val('');
-                }
-            });
-        }
-
-        function login(username, password) {
-            $('#login-section-error').html('');
-
-            if (username && password) {
-                var username = username;
-                var password = password;
-            } else {
-                var username = $("#form-username").val();
-                var password = $("#form-password").val();
-            }
-
-            client.login(username, password,
-                function(err) {
-                    if (err) {
-                        $('#login-section-error').html('There was an error logging you in.');
-                        console.log(err)
-                    } else {
-                        //login succeeded
-                        client.getLoggedInUser(function(err, data, user) {
-                            if (err) {
-                                //error - could not get logged in user
-                            } else {
-                                if (client.isLoggedIn()) {
-                                    appUser = user;
-                                }
-                            }
-                        });
-
-                        //clear out the login form so it is empty if the user chooses to log out
-                        $("#form-username").val('');
-                        $("#form-password").val('');
-
-                        window.location = "#page-main";
-                        loadItems(myList);
-                    }
-                }
-            );
+            loadItems();
         }
 
         // loadItems();
 
-        function loadItems(collection) {
-            collection.fetch(
+        function loadItems() {
+            items.fetch(
                 function(err, data) { // Success
                     if (err) {
                         alert("Read failed - loading offline data");
-                        collection = client.restoreCollection(localStorage.getItem(collection));
-                        collection.resetEntityPointer();
+                        items = client.restoreCollection(localStorage.getItem('items'));
+                        items.resetEntityPointer();
                         $('#bucketlist').empty();
-                        while (collection.hasNextEntity()) {
-                            var item = collection.getNextEntity();
-                            $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
+                        while (items.hasNextEntity()) {
+                            var item = items.getNextEntity();
+                            $('#bucketlist').append('<li><a href="#page-add"><h3>' + item.get('title') + '</h3></a></li>')
                         }
                         $('#bucketlist').listview('refresh');
                     } else {
                         $('#bucketlist').empty();
-                        while (collection.hasNextEntity()) {
-                            var item = collection.getNextEntity();
-                            $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
-                            var lookup = item.get('completedby');
-                            if ((lookup) && (lookup.indexOf(appUser.get('uuid')) > -1)) {
-                                $('#bucketlist li:last').addClass('done');
-                            }
+                        while (items.hasNextEntity()) {
+                            var item = items.getNextEntity();
+                            $('#bucketlist').append('<li><a href="#page-add"><h3>' + item.get('title') + '</h3></a></li>')
                         }
-                        $('.masterList li').attr('data-icon', 'expand-alt');
-                        $('.masterList li.done').addClass('hideaway');
                         $('#bucketlist').listview('refresh');
-                        localStorage.setItem(collection, collection.serialize());
+                        localStorage.setItem('items', items.serialize());
                     }
                 });
         }
@@ -212,117 +194,13 @@
                     if (error) {
                         alert("write failed");
                     } else {
-                        var options = {
-                            "type": "items",
-                            "uuid": response._data.uuid
-                        }
-                        client.getEntity(options, function(error, response) {
-                            appUser.connect("myitems", response, function(error, data) {
-                                if (error) {
-                                    alert("error!");
-                                } else {
-                                    console.log('here');
-                                    $('#form-title').val('');
-                                    $('#form-desc').val('');
-                                    loadItems(myList);
-                                    history.back();
-                                }
-                            });
-                        });
-
-
+                        $('#form-title').val('');
+                        $('#form-desc').val('');
+                        loadItems();
+                        history.back();
                     }
                 });
             }
-        });
-
-        $('#bucketlist').on('click', 'a', function(e) {
-            if ($('#bucketlist').hasClass('masterList')) {
-                var options = {
-                    "type": "items",
-                    "uuid": $(this).attr('data-uuid')
-                }
-                client.getEntity(options, function(error, response) {
-                    appUser.connect("myitems", response, function(error, data) {
-                        if (error) {
-                            alert("error!");
-                        } else {
-                            loadItems(myList);
-                            console.log('did it')
-                        }
-                    });
-                });
-                return false;
-            } else {
-                var options = {
-                    "type": "items",
-                    "uuid": $(this).attr('data-uuid')
-                };
-                client.getEntity(options, function(error, response) {
-                    var title = response.get('title');
-                    var desc = response.get('desc');
-                    var completedby = response.get('completedby');
-                    $('#form-title').val(title);
-                    $('#form-desc').val(desc);
-                    $('#form-uuid').val(options.uuid);
-                    $('#form-completedby').val(completedby);
-                });
-                $('#btn-submit, #btn-cancel').addClass('hideaway');
-                $('#btn-did-it, #btn-forget-it').removeClass('hideaway');
-            }
-        });
-        $('#header-mylist').on('click', '#btn-new', function() {
-            $('#btn-submit, #btn-cancel').removeClass('hideaway');
-            $('#btn-did-it, #btn-forget-it').addClass('hideaway');
-            $('#form-title').val('');
-            $('#form-desc').val('');
-        });
-        $('#form-add-item').on('click', '#btn-did-it', function() {
-            var uuid = $('#form-uuid').val();
-            var completedby = ($('#form-completedby').val()).split(',');
-            completedby.push(appUser.get('uuid'));
-            var options = {
-                "client": client,
-                "data": {
-                    'type': 'items',
-                    'uuid': uuid,
-                    'completedby': completedby
-                }
-            };
-            var entry = new Apigee.Entity(options);
-            entry.save(function(error, response) {
-                if (error) {
-                    alert('could not write to the database')
-                } else {
-                    loadItems(myList);
-                    window.location = "#page-main";
-                }
-            });
-        });
-        $("#form-add-item").on('click', '#btn-forget-it', function() {
-            var uuid = $('#form-uuid').val();
-            var options = {
-                "endpoint": "/users/me/myitems/" + uuid,
-                "method": "DELETE"
-            }
-            client.request(options, function(err, response) {
-                if (err) {
-                    alert("Unable to delete item");
-                } else {
-                    console.log('SUCCESS');
-                    loadItems(myList);
-                }
-                window.location = "#page-main";
-            });
-        });
-
-        $('#app-nav').on('click', '#btn-load-inspiration', function() {
-            loadItems(items);
-            $('#bucketlist').addClass('masterList');
-        });
-        $('#app-nav').on('click', '#btn-load-mylist', function() {
-            loadItems(myList);
-            $('.masterList').removeClass('masterList');
         });
     });
     </script>
@@ -386,11 +264,8 @@
                 <label for="form-desc">More Info:</label>
                 <textarea name="" id="form-desc" placeholder="Add any additional information here..."></textarea>
                 <input id="form-uuid" type="hidden" />
-                <input id="form-completedby" type="hidden" />
                 <a id="btn-cancel" data-role="button" data-icon="delete" href="#page-main">Cancel</a>
                 <a id="btn-submit" data-role="button" data-icon="plus">Submit</a>
-                <a id="btn-did-it" class="hideaway" data-role="button" data-icon="check" href="#page-main">I did it!</a>
-                <a id="btn-forget-it" class="hideaway" data-role="button" data-icon="trash" href="#page-main">Forget it!</a>
             </form>
         </article>
         <!-- /content -->
@@ -402,10 +277,14 @@
         <!-- /header -->
         <article data-role="content">
             <form action="" id="form-add-user" class="" style="">
+                <label for="form-new-fullname">Full Name:</label>
+                <input id="form-new-fullname" type="text" placeholder="Enter your full name..." />
                 <label for="form-new-username">Username:</label>
                 <input id="form-new-username" type="text" placeholder="Choose a username..." />
                 <label for="form-new-password">Password:</label>
-                <textarea name="" id="form-new-password" placeholder="Choose a password"></textarea>
+                <input id="form-new-password" placeholder="Choose a password" />
+                <label for="form-new-email">Email:</label>
+                <input id="form-new-email" placeholder="Enter your email address..." />
                 <a id="btn-clear" data-role="button" data-icon="delete">Clear</a>
                 <a id="btn-submit" data-role="button" data-icon="plus">Submit</a>
             </form>

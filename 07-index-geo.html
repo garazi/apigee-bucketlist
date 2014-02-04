@@ -29,13 +29,11 @@
 
     <script>
     $(function() {
-        var appUser;
 
         var client = new Apigee.Client({
-            orgName: 'yourorgname', // Your Apigee.com username for App Services
+            orgName: 'garazi', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
         });
-
         var items = new Apigee.Collection({
             "client": client,
             "type": "items",
@@ -45,87 +43,45 @@
             }
         });
 
-        client.getLoggedInUser(function(err, data, user) {
-            if (err) {
-                //error - could not get logged in user
-                window.location = "#page-login";
-            } else {
-                if (client.isLoggedIn()) {
-                    appUser = user;
-                }
-            }
-        });
+        navigator.geolocation.getCurrentPosition(geoSuccess, geoFailure);
 
-        $('#form-add-user').on('click', '#btn-submit', createUser);
-        $('#form-login-user').on('click', '#btn-submit', login);
-        $('#header-mylist').on('click', '#btn-logout', function() {
-            client.logout();
-        })
-
-        function createUser() {
-            var username = $("#form-new-username").val();
-            var password = $("#form-new-password").val();
-            var options = {
-                method: 'POST',
-                endpoint: 'users',
-                body: {
-                    "name": username,
-                    "email": "",
-                    "username": username,
-                    "password": password
-                }
-            };
-            client.request(options, function(err, data) {
-                if (err) {
-                    console.log('FAIL')
-                } else {
-                    console.log('SUCCESS');
-                    login(username, password);
-                    $("#form-new-username").val('');
-                    $("#form-new-password").val('');
+        function geoSuccess(e) {
+            console.log(e)
+            my_location = e.coords;
+            console.log("lat: " + my_location.latitude);
+            console.log("lon: " + my_location.longitude);
+            items = new Apigee.Collection({
+                "client": client,
+                "type": "items",
+                "qs": {
+                    "limit": 100,
+                    "ql": "location within 1500000 of " + my_location.latitude + "," + my_location.longitude
                 }
             });
+            loadItems();
         }
 
-        function login(username, password) {
-            $('#login-section-error').html('');
+        function geoFailure() {
+            alert("Unable to access your geolocation");
 
-            if (username && password) {
-                var username = username;
-                var password = password;
-            } else {
-                var username = $("#form-username").val();
-                var password = $("#form-password").val();
+            // The following is just for testing locally in Chrome
+            // that doesn't support geolocation from a file:// address
+            my_location = {
+                "latitude":"35.123456",
+                "longitude": "-120.987654"
             }
-
-            client.login(username, password,
-                function(err) {
-                    if (err) {
-                        $('#login-section-error').html('There was an error logging you in.');
-                        console.log(err)
-                    } else {
-                        //login succeeded
-                        client.getLoggedInUser(function(err, data, user) {
-                            if (err) {
-                                //error - could not get logged in user
-                            } else {
-                                if (client.isLoggedIn()) {
-                                    appUser = user;
-                                }
-                            }
-                        });
-
-                        //clear out the login form so it is empty if the user chooses to log out
-                        $("#form-username").val('');
-                        $("#form-password").val('');
-
-                        window.location = "#page-main";
-                    }
+            items = new Apigee.Collection({
+                "client": client,
+                "type": "items",
+                "qs": {
+                    "limit": 100,
+                    "ql": "location within 1500000 of " + my_location.latitude + "," + my_location.longitude
                 }
-            );
+            });
+            loadItems();
         }
 
-        loadItems();
+        // loadItems();
 
         function loadItems() {
             items.fetch(
@@ -178,7 +134,6 @@
     <section id="page-main" data-role="page">
         <header id="header-mylist" data-role="header" data-position="fixed" data-theme="a">
             <a id="btn-new" data-role="button" data-icon="plus" data-iconpos="right" data-inline="true" href="#page-add" class="ui-btn-right" data-theme="c">New</a>
-            <a id="btn-logout" data-role="button" data-icon="arrow-l" data-iconpos="left" data-inline="true" href="#page-login" class="ui-btn-left" data-theme="c">Logout</a>
             <h1>My Bucket List</h1>
         </header>
         <!-- /header -->
@@ -235,42 +190,6 @@
                 <a id="btn-cancel" data-role="button" data-icon="delete" href="#page-main">Cancel</a>
                 <a id="btn-submit" data-role="button" data-icon="plus">Submit</a>
             </form>
-        </article>
-        <!-- /content -->
-    </section>
-    <section id="page-newuser" data-role="page">
-        <header data-role="header" data-theme="a">
-            <h1>New User</h1>
-        </header>
-        <!-- /header -->
-        <article data-role="content">
-            <form action="" id="form-add-user" class="" style="">
-                <label for="form-new-username">Username:</label>
-                <input id="form-new-username" type="text" placeholder="Choose a username..." />
-                <label for="form-new-password">Password:</label>
-                <textarea name="" id="form-new-password" placeholder="Choose a password"></textarea>
-                <a id="btn-clear" data-role="button" data-icon="delete">Clear</a>
-                <a id="btn-submit" data-role="button" data-icon="plus">Submit</a>
-            </form>
-        </article>
-        <!-- /content -->
-    </section>
-    <section id="page-login" data-role="page">
-        <header data-role="header" data-theme="a">
-            <h1>Login</h1>
-        </header>
-        <!-- /header -->
-        <article data-role="content">
-            <form action="" id="form-login-user" class="" style="">
-                <label for="form-username">Username:</label>
-                <input id="form-username" type="text" placeholder="Enter your username..." />
-                <label for="form-password">Password:</label>
-                <textarea name="" id="form-password" placeholder="Enter your password..."></textarea>
-                <a id="btn-clear" data-role="button" data-icon="delete">Clear</a>
-                <a id="btn-submit" data-role="button" data-icon="plus">Submit</a>
-                <a id="btn-newuser" data-role="button" data-icon="user" href="#page-newuser">Create an Account</a>
-            </form>
-            <p id="login-section-error"></p>
         </article>
         <!-- /content -->
     </section>
