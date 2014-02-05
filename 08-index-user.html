@@ -85,7 +85,7 @@
 
         function login(username, password) {
             $('#login-section-error').html('');
-            if (username && password) { // only if the user has just signed up
+            if (username && password) { // if the user has just signed up, we are passing their username and password
                 var username = username;
                 var password = password;
             } else {
@@ -111,8 +111,8 @@
                         //clear out the login form so it is empty if the user chooses to log out
                         $("#form-username").val('');
                         $("#form-password").val('');
-
                         window.location = "#page-main";
+                        loadItems();
                     }
                 }
             );
@@ -133,7 +133,7 @@
                     "ql": "location within 1500000 of " + my_location.latitude + "," + my_location.longitude
                 }
             });
-            loadItems();
+            // loadItems(); <-- loadItems now called after login
         }
 
         function geoFailure() {
@@ -141,19 +141,19 @@
 
             // The following is just for testing locally in Chrome
             // that doesn't support geolocation from a file:// address
-            my_location = {
-                "latitude":"35.123456",
-                "longitude": "-120.987654"
-            }
-            items = new Apigee.Collection({
-                "client": client,
-                "type": "items",
-                "qs": {
-                    "limit": 100,
-                    "ql": "location within 1500000 of " + my_location.latitude + "," + my_location.longitude
-                }
-            });
-            loadItems();
+            // my_location = {
+            //     "latitude":"35.123456",
+            //     "longitude": "-120.987654"
+            // }
+            // items = new Apigee.Collection({
+            //     "client": client,
+            //     "type": "items",
+            //     "qs": {
+            //         "limit": 100,
+            //         "ql": "location within 1500000 of " + my_location.latitude + "," + my_location.longitude
+            //     }
+            // });
+            // loadItems(); <-- loadItems now called after login
         }
 
         // loadItems();

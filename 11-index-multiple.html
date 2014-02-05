@@ -72,7 +72,7 @@
             client.logout();
             $('#form-login-user #btn-submit').removeClass('hideaway');
         });
-        $('form').on('click', '#btn-clear', function () {
+        $('form').on('click', '#btn-clear', function() {
             $('input').val('');
         });
 
@@ -157,18 +157,18 @@
 
             // The following is just for testing locally in Chrome
             // that doesn't support geolocation from a file:// address
-            my_location = {
-                "latitude":"35.123456",
-                "longitude": "-120.987654"
-            }
-            items = new Apigee.Collection({
-                "client": client,
-                "type": "items",
-                "qs": {
-                    "limit": 100,
-                    "ql": "location within 1500000 of " + my_location.latitude + "," + my_location.longitude
-                }
-            });
+            // my_location = {
+            //     "latitude": "35.123456",
+            //     "longitude": "-120.987654"
+            // }
+            // items = new Apigee.Collection({
+            //     "client": client,
+            //     "type": "items",
+            //     "qs": {
+            //         "limit": 100,
+            //         "ql": "location within 1500000 of " + my_location.latitude + "," + my_location.longitude
+            //     }
+            // });
             // loadItems();  <-- loadItems now called after login
         }
 
@@ -238,39 +238,39 @@
         });
 
         $('#bucketlist').on('click', 'a', function(e) {
-            if($('#bucketlist').hasClass('masterList')) {
+            if ($('#bucketlist').hasClass('masterList')) {
                 var options = {
-                            "type": "items",
-                            "uuid": $(this).attr('data-uuid')
+                    "type": "items",
+                    "uuid": $(this).attr('data-uuid')
+                }
+                client.getEntity(options, function(error, response) {
+                    appUser.connect("myitems", response, function(error, data) {
+                        if (error) {
+                            alert("error!");
+                        } else {
+                            loadItems(myList);
+                            console.log('did it')
                         }
-                        client.getEntity(options, function(error, response) {
-                            appUser.connect("myitems", response, function(error, data) {
-                                if (error) {
-                                    alert("error!");
-                                } else {
-                                    loadItems(myList);
-                                    console.log('did it')
-                                }
-                            });
-                        });
-                        return false;
+                    });
+                });
+                return false;
             } else {
-            var options = {
-                "type": "items",
-                "uuid": $(this).attr('data-uuid')
-            };
-            client.getEntity(options, function(error, response) {
-                var title = response.get('title');
-                var desc = response.get('desc');
-                var completedby = response.get('completedby');
-                $('#form-title').val(title);
-                $('#form-desc').val(desc);
-                $('#form-uuid').val(options.uuid);
-                $('#form-completedby').val(completedby);
-            });
-            $('#btn-submit, #btn-cancel').addClass('hideaway');
-            $('#btn-did-it, #btn-forget-it').removeClass('hideaway');
-        }
+                var options = {
+                    "type": "items",
+                    "uuid": $(this).attr('data-uuid')
+                };
+                client.getEntity(options, function(error, response) {
+                    var title = response.get('title');
+                    var desc = response.get('desc');
+                    var completedby = response.get('completedby');
+                    $('#form-title').val(title);
+                    $('#form-desc').val(desc);
+                    $('#form-uuid').val(options.uuid);
+                    $('#form-completedby').val(completedby);
+                });
+                $('#btn-submit, #btn-cancel').addClass('hideaway');
+                $('#btn-did-it, #btn-forget-it').removeClass('hideaway');
+            }
         });
         $('#header-mylist').on('click', '#btn-new', function() {
             $('#btn-submit, #btn-cancel').removeClass('hideaway');
@@ -317,11 +317,11 @@
             });
         });
 
-        $('#app-nav').on('click', '#btn-load-inspiration', function () {
+        $('#app-nav').on('click', '#btn-load-inspiration', function() {
             loadItems(items);
             $('#bucketlist').addClass('masterList');
         });
-        $('#app-nav').on('click', '#btn-load-mylist', function () {
+        $('#app-nav').on('click', '#btn-load-mylist', function() {
             loadItems(myList);
             $('.masterList').removeClass('masterList');
         });
