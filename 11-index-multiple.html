@@ -174,26 +174,30 @@
 
         function populateList(collection) {
             $('#bucketlist').empty();
-            while (items.hasNextEntity()) {
-                var item = items.getNextEntity();
+            while (collection.hasNextEntity()) {
+                var item = collection.getNextEntity();
                 $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
+                var lookup = item.get('completedby');
+                if ((lookup) && (lookup.indexOf(appUser.get('uuid')) > -1)) {
+                    $('#bucketlist li:last').addClass('done');
+                }
             }
             $('#bucketlist').listview('refresh');
         }
 
         // loadItems();
 
-        function loadItems() {
-            items.fetch(
+        function loadItems(collection) {
+            collection.fetch(
                 function(err, data) { // Success
                     if (err) {
                         alert("Read failed - loading offline data");
-                        items = client.restoreCollection(localStorage.getItem(collection));
-                        items.resetEntityPointer();
-                        populateList(items);
+                        collection = client.restoreCollection(localStorage.getItem(collection));
+                        collection.resetEntityPointer();
+                        populateList(collection);
                     } else {
-                        populateList(items);
-                        localStorage.setItem(collection, items.serialize());
+                        populateList(collection);
+                        localStorage.setItem(collection, collection.serialize());
                     }
                 }
             );
@@ -289,7 +293,7 @@
                 if (error) {
                     alert('could not write to the database')
                 } else {
-                    loadItems(myList);
+                    $('#btn-load-mylist').trigger('click');
                     window.location = "#page-main";
                 }
             });
@@ -305,7 +309,7 @@
                     alert("Unable to delete item");
                 } else {
                     console.log('SUCCESS');
-                    loadItems(myList);
+                    $('#btn-load-mylist').trigger('click');
                 }
                 window.location = "#page-main";
             });

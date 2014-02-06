@@ -71,7 +71,7 @@
             client.logout();
             $('#form-login-user #btn-submit').removeClass('hideaway');
         });
-        $('form').on('click', '#btn-clear', function () {
+        $('form').on('click', '#btn-clear', function() {
             $('input').val('');
         });
 
@@ -173,9 +173,13 @@
 
         function populateList(collection) {
             $('#bucketlist').empty();
-            while (items.hasNextEntity()) {
-                var item = items.getNextEntity();
+            while (collection.hasNextEntity()) {
+                var item = collection.getNextEntity();
                 $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
+                var lookup = item.get('completedby');
+                if ((lookup) && (lookup.indexOf(appUser.get('uuid')) > -1)) {
+                    $('#bucketlist li:last').addClass('done');
+                }
             }
             $('#bucketlist').listview('refresh');
         }
@@ -183,16 +187,16 @@
         // loadItems();
 
         function loadItems() {
-            items.fetch(
+            myList.fetch(
                 function(err, data) { // Success
                     if (err) {
                         alert("Read failed - loading offline data");
-                        items = client.restoreCollection(localStorage.getItem('items'));
-                        items.resetEntityPointer();
-                        populateList(items);
+                        myList = client.restoreCollection(localStorage.getItem('items'));
+                        myList.resetEntityPointer();
+                        populateList(myList);
                     } else {
-                        populateList(items);
-                        localStorage.setItem(collection, items.serialize());
+                        populateList(myList);
+                        localStorage.setItem('items', myList.serialize());
                     }
                 }
             );
