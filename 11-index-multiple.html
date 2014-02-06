@@ -182,6 +182,8 @@
                     $('#bucketlist li:last').addClass('done');
                 }
             }
+            $('.masterList li').attr('data-icon', 'expand-alt');
+            $('.masterList li.done').addClass('hideaway');
             $('#bucketlist').listview('refresh');
         }
 
