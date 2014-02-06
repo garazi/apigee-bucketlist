@@ -33,6 +33,7 @@
             orgName: 'yourorgname', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
         });
+        
         var items = new Apigee.Collection({
             "client": client,
             "type": "items",
@@ -41,6 +42,15 @@
                 "ql": "order by title"
             }
         });
+
+        function populateList(collection) {
+            $('#bucketlist').empty();
+            while (items.hasNextEntity()) {
+                var item = items.getNextEntity();
+                $('#bucketlist').append('<li><a href="#page-add"><h3>' + item.get('title') + '</h3></a></li>')
+            }
+            $('#bucketlist').listview('refresh');
+        }
 
         loadItems();
 
@@ -51,22 +61,13 @@
                         alert("Read failed - loading offline data");
                         items = client.restoreCollection(localStorage.getItem('items'));
                         items.resetEntityPointer();
-                        $('#bucketlist').empty();
-                        while (items.hasNextEntity()) {
-                            var item = items.getNextEntity();
-                            $('#bucketlist').append('<li><a href="#page-add"><h3>' + item.get('title') + '</h3></a></li>')
-                        }
-                        $('#bucketlist').listview('refresh');
+                        populateList(items);
                     } else {
-                        $('#bucketlist').empty();
-                        while (items.hasNextEntity()) {
-                            var item = items.getNextEntity();
-                            $('#bucketlist').append('<li><a href="#page-add"><h3>' + item.get('title') + '</h3></a></li>')
-                        }
-                        $('#bucketlist').listview('refresh');
+                        populateList(items);
                         localStorage.setItem('items', items.serialize());
                     }
-                });
+                }
+            );
         }
 
         $('#form-add-item').on('click', '#btn-submit', function() {

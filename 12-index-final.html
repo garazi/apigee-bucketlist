@@ -157,37 +157,31 @@
             );
         }
 
+        function populateList(collection) {
+            $('#bucketlist').empty();
+            while (items.hasNextEntity()) {
+                var item = items.getNextEntity();
+                $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
+            }
+            $('#bucketlist').listview('refresh');
+        }
+
         // loadItems();
 
-        function loadItems(collection) {
-            collection.fetch(
+        function loadItems() {
+            items.fetch(
                 function(err, data) { // Success
                     if (err) {
                         alert("Read failed - loading offline data");
-                        collection = client.restoreCollection(localStorage.getItem(collection));
-                        collection.resetEntityPointer();
-                        $('#bucketlist').empty();
-                        while (collection.hasNextEntity()) {
-                            var item = collection.getNextEntity();
-                            $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
-                        }
-                        $('#bucketlist').listview('refresh');
+                        items = client.restoreCollection(localStorage.getItem(collection));
+                        items.resetEntityPointer();
+                        populateList(items);
                     } else {
-                        $('#bucketlist').empty();
-                        while (collection.hasNextEntity()) {
-                            var item = collection.getNextEntity();
-                            $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
-                            var lookup = item.get('completedby');
-                            if ((lookup) && (lookup.indexOf(appUser.get('uuid')) > -1)) {
-                                $('#bucketlist li:last').addClass('done');
-                            }
-                        }
-                        $('.masterList li').attr('data-icon', 'expand-alt');
-                        $('.masterList li.done').addClass('hideaway');
-                        $('#bucketlist').listview('refresh');
-                        localStorage.setItem(collection, collection.serialize());
+                        populateList(items);
+                        localStorage.setItem(collection, items.serialize());
                     }
-                });
+                }
+            );
         }
 
         $('#form-add-item').on('click', '#btn-submit', function() {

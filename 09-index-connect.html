@@ -169,6 +169,15 @@
             // loadItems();  <-- loadItems now called after login
         }
 
+        function populateList(collection) {
+            $('#bucketlist').empty();
+            while (collection.hasNextEntity()) {
+                var item = collection.getNextEntity();
+                $('#bucketlist').append('<li><a href="#page-add"><h3>' + item.get('title') + '</h3></a></li>')
+            }
+            $('#bucketlist').listview('refresh');
+        }
+
         // loadItems();
 
         function loadItems() {
@@ -178,22 +187,13 @@
                         alert("Read failed - loading offline data");
                         myList = client.restoreCollection(localStorage.getItem('items'));
                         myList.resetEntityPointer();
-                        $('#bucketlist').empty();
-                        while (myList.hasNextEntity()) {
-                            var item = myList.getNextEntity();
-                            $('#bucketlist').append('<li><a href="#page-add"><h3>' + item.get('title') + '</h3></a></li>')
-                        }
-                        $('#bucketlist').listview('refresh');
+                        populateList(myList);
                     } else {
-                        $('#bucketlist').empty();
-                        while (myList.hasNextEntity()) {
-                            var item = myList.getNextEntity();
-                            $('#bucketlist').append('<li><a href="#page-add"><h3>' + item.get('title') + '</h3></a></li>')
-                        }
-                        $('#bucketlist').listview('refresh');
-                        localStorage.setItem('items', items.serialize());
+                        populateList(myList);
+                        localStorage.setItem('items', myList.serialize());
                     }
-                });
+                }
+            );
         }
 
         $('#form-add-item').on('click', '#btn-submit', function() {

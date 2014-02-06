@@ -171,35 +171,31 @@
             // loadItems();  <-- loadItems now called after login
         }
 
+        function populateList(collection) {
+            $('#bucketlist').empty();
+            while (items.hasNextEntity()) {
+                var item = items.getNextEntity();
+                $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
+            }
+            $('#bucketlist').listview('refresh');
+        }
+
         // loadItems();
 
         function loadItems() {
-            myList.fetch(
+            items.fetch(
                 function(err, data) { // Success
                     if (err) {
                         alert("Read failed - loading offline data");
-                        myList = client.restoreCollection(localStorage.getItem('items'));
-                        myList.resetEntityPointer();
-                        $('#bucketlist').empty();
-                        while (myList.hasNextEntity()) {
-                            var item = myList.getNextEntity();
-                            $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
-                        }
-                        $('#bucketlist').listview('refresh');
+                        items = client.restoreCollection(localStorage.getItem('items'));
+                        items.resetEntityPointer();
+                        populateList(items);
                     } else {
-                        $('#bucketlist').empty();
-                        while (myList.hasNextEntity()) {
-                            var item = myList.getNextEntity();
-                            $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
-                            var lookup = item.get('completedby');
-                            if ((lookup) && (lookup.indexOf(appUser.get('uuid')) > -1)) {
-                                $('#bucketlist li:last').addClass('done');
-                            }
-                        }
-                        $('#bucketlist').listview('refresh');
-                        localStorage.setItem('items', items.serialize());
+                        populateList(items);
+                        localStorage.setItem(collection, items.serialize());
                     }
-                });
+                }
+            );
         }
 
         $('#form-add-item').on('click', '#btn-submit', function() {
