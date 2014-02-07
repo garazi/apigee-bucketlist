@@ -33,7 +33,7 @@
             orgName: 'yourorgname', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
         });
-        
+
         var items = new Apigee.Collection({
             "client": client,
             "type": "items",
@@ -87,6 +87,10 @@
                     }
                 });
             }
+        });
+
+        $('form').on('click', '#btn-clear', function() {
+            $('input').val('');
         });
     });
     </script>

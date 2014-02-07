@@ -72,9 +72,6 @@
             client.logout();
             $('#form-login-user #btn-submit').removeClass('hideaway');
         });
-        $('form').on('click', '#btn-clear', function() {
-            $('input').val('');
-        });
 
         function createUser() {
             var fullname = $("#form-new-fullname").val();
@@ -224,17 +221,20 @@
                                 if (error) {
                                     alert("error!");
                                 } else {
-                                    console.log('here');
                                     $('#form-title').val('');
                                     $('#form-desc').val('');
                                     $('#btn-load-mylist').trigger('click');
-                                    history.back();
+                                    window.location = "#page-main";
                                 }
                             });
                         });
                     }
                 });
             }
+        });
+
+        $('form').on('click', '#btn-clear', function() {
+            $('input').val('');
         });
 
         $('#bucketlist').on('click', 'a', function(e) {
@@ -249,7 +249,6 @@
                             alert("error!");
                         } else {
                             loadItems(myList);
-                            console.log('did it')
                         }
                     });
                 });

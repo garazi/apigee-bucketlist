@@ -71,9 +71,7 @@
             client.logout();
             $('#form-login-user #btn-submit').removeClass('hideaway');
         });
-        $('form').on('click', '#btn-clear', function() {
-            $('input').val('');
-        });
+        
 
         function createUser() {
             var fullname = $("#form-new-fullname").val();
@@ -232,6 +230,10 @@
                     }
                 });
             }
+        });
+
+        $('form').on('click', '#btn-clear', function() {
+            $('input').val('');
         });
 
         $('#bucketlist').on('click', 'a', function(e) {
