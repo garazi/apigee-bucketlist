@@ -223,7 +223,7 @@
                                     $('#form-title').val('');
                                     $('#form-desc').val('');
                                     loadItems();
-                                    history.back();
+                                    window.location = "#page-main";
                                 }
                             });
                         });
@@ -277,7 +277,6 @@
                     alert('could not write to the database')
                 } else {
                     loadItems();
-                    window.location = "#page-main";
                 }
             });
         });
@@ -293,7 +292,6 @@
                 } else {
                     console.log('Connection deleted');
                     loadItems();
-                    window.location = "#page-main";
                 }
             });
         })
