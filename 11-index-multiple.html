@@ -32,7 +32,7 @@
         var appUser;
 
         var ua = navigator.userAgent;
-        version = parseFloat(ua.slice(ua.indexOf("Version") + 8));
+        version = parseFloat(ua.slice(ua.indexOf("iPhone") + 10));
         if (version >= 7) {
             $('body').addClass('ios7');
         }
