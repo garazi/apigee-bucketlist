@@ -31,6 +31,12 @@
     $(function() {
         var appUser;
 
+        var ua = navigator.userAgent;
+        version = parseFloat(ua.slice(ua.indexOf("Version") + 8));
+        if (version >= 7) {
+            $('body').addClass('ios7');
+        }
+
         var client = new Apigee.Client({
             orgName: 'yourorgname', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
@@ -309,10 +315,9 @@
                 if (err) {
                     alert("Unable to delete item");
                 } else {
-                    console.log('SUCCESS');
                     $('#btn-load-mylist').trigger('click');
+                    window.location = "#page-main";
                 }
-                window.location = "#page-main";
             });
         });
 
