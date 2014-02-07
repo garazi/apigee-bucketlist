@@ -175,13 +175,13 @@ border: none;
 input.ui-input-text, textarea.ui-input-text {
     border: 0;
 }
-.ios7 .ui-mobile [data-role=page], .ui-mobile [data-role=dialog], .ui-page {
+.ios7 .ui-mobile [data-role=page], .ios7 .ui-mobile [data-role=dialog], .ui-page {
     margin-top: 20px;
 }
 .ios7 .ui-header-fixed {
     padding-top: 15px;
 }
-.ios7 .ui-header-fixed .ui-btn-left, .ui-header-fixed .ui-btn-right {
+.ios7 .ui-header-fixed .ui-btn-left, .ios7 .ui-header-fixed .ui-btn-right {
     top: 20px;
 }
 /*
