@@ -4,9 +4,10 @@
 <head>
     <title>jQuery Mobile Page</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes">
 
     <!-- Fonts -->
     <link rel="stylesheet" href="css/font-awesome.min.css" />
@@ -30,6 +31,12 @@
     $(function() {
         var appUser;
 
+        var ua = navigator.userAgent;
+        version = parseFloat(ua.slice(ua.indexOf("iPhone") + 10));
+        if (version >= 7) {
+            $('body').addClass('ios7');
+        }
+
         var client = new Apigee.Client({
             orgName: 'yourorgname', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
@@ -39,7 +46,8 @@
             "client": client,
             "type": "items",
             "qs": {
-                "limit": 100
+                "limit": 100,
+                "ql": "order by title"
             }
         });
 
@@ -50,29 +58,7 @@
                 "limit": 25,
                 "ql": "order by title"
             }
-        });
-
-        navigator.geolocation.getCurrentPosition(geoSuccess, geoFailure);
-
-        function geoSuccess(e) {
-            console.log(e)
-            my_location = e.coords;
-            console.log("lat: " + my_location.latitude);
-            console.log("lon: " + my_location.longitude);
-            items = new Apigee.Collection({
-                "client": client,
-                "type": "items",
-                "qs": {
-                    "limit": 100,
-                    "ql": "not location.latitude='*' OR location within 150000 of " + my_location.latitude + "," + my_location.longitude
-                }
-            });
-
-        }
-
-        function geoFailure() {
-            alert("Unable to access your geolocation");
-        }
+        })
 
         client.getLoggedInUser(function(err, data, user) {
             if (err) {
@@ -91,29 +77,23 @@
         $('#header-mylist').on('click', '#btn-logout', function() {
             client.logout();
             $('#form-login-user #btn-submit').removeClass('hideaway');
-        })
+        });
 
         function createUser() {
+            var fullname = $("#form-new-fullname").val();
             var username = $("#form-new-username").val();
             var password = $("#form-new-password").val();
-            var options = {
-                method: 'POST',
-                endpoint: 'users',
-                body: {
-                    "name": username,
-                    "email": "",
-                    "username": username,
-                    "password": password,
-
-                }
-            };
-            client.request(options, function(err, data) {
+            var email = $("#form-new-email").val();
+            client.signup(username, password, email, fullname, function(err, data) {
                 if (err) {
-                    alert('Could not create the user');
+                    console.log('FAIL')
                 } else {
+                    console.log('SUCCESS');
                     login(username, password);
                     $("#form-new-username").val('');
                     $("#form-new-password").val('');
+                    $("#form-new-password").val('');
+                    $("#form-new-email").val('');
                 }
             });
         }
@@ -157,28 +137,72 @@
             );
         }
 
+        navigator.geolocation.getCurrentPosition(geoSuccess, geoFailure);
+
+        function geoSuccess(e) {
+            console.log(e)
+            my_location = e.coords;
+            console.log("lat: " + my_location.latitude);
+            console.log("lon: " + my_location.longitude);
+            items = new Apigee.Collection({
+                "client": client,
+                "type": "items",
+                "qs": {
+                    "limit": 100,
+                    "ql": "location within 1500000 of " + my_location.latitude + "," + my_location.longitude
+                }
+            });
+            // loadItems(); <-- loadItems now called after login
+        }
+
+        function geoFailure() {
+            alert("Unable to access your geolocation");
+
+            // The following is just for testing locally in Chrome
+            // that doesn't support geolocation from a file:// address
+            // my_location = {
+            //     "latitude": "35.123456",
+            //     "longitude": "-120.987654"
+            // }
+            // items = new Apigee.Collection({
+            //     "client": client,
+            //     "type": "items",
+            //     "qs": {
+            //         "limit": 100,
+            //         "ql": "location within 1500000 of " + my_location.latitude + "," + my_location.longitude
+            //     }
+            // });
+            // loadItems();  <-- loadItems now called after login
+        }
+
         function populateList(collection) {
             $('#bucketlist').empty();
-            while (items.hasNextEntity()) {
-                var item = items.getNextEntity();
+            while (collection.hasNextEntity()) {
+                var item = collection.getNextEntity();
                 $('#bucketlist').append('<li><a href="#page-add" data-uuid=' + item.get('uuid') + '><h3>' + item.get('title') + '</h3></a></li>');
+                var lookup = item.get('completedby');
+                if ((lookup) && (lookup.indexOf(appUser.get('uuid')) > -1)) {
+                    $('#bucketlist li:last').addClass('done');
+                }
             }
+            $('.masterList li').attr('data-icon', 'expand-alt');
+            $('.masterList li.done').addClass('hideaway');
             $('#bucketlist').listview('refresh');
         }
 
         // loadItems();
 
-        function loadItems() {
-            items.fetch(
+        function loadItems(collection) {
+            collection.fetch(
                 function(err, data) { // Success
                     if (err) {
                         alert("Read failed - loading offline data");
-                        items = client.restoreCollection(localStorage.getItem(collection));
-                        items.resetEntityPointer();
-                        populateList(items);
+                        collection = client.restoreCollection(localStorage.getItem(collection));
+                        collection.resetEntityPointer();
+                        populateList(collection);
                     } else {
-                        populateList(items);
-                        localStorage.setItem(collection, items.serialize());
+                        populateList(collection);
+                        localStorage.setItem(collection, collection.serialize());
                     }
                 }
             );
@@ -203,19 +227,20 @@
                                 if (error) {
                                     alert("error!");
                                 } else {
-                                    console.log('here');
                                     $('#form-title').val('');
                                     $('#form-desc').val('');
-                                    loadItems(myList);
-                                    history.back();
+                                    $('#btn-load-mylist').trigger('click');
+                                    window.location = "#page-main";
                                 }
                             });
                         });
-
-
                     }
                 });
             }
+        });
+
+        $('form').on('click', '#btn-clear', function() {
+            $('input').val('');
         });
 
         $('#bucketlist').on('click', 'a', function(e) {
@@ -230,11 +255,11 @@
                             alert("error!");
                         } else {
                             loadItems(myList);
-                            console.log('did it')
+                            $('.masterList').removeClass('masterList');
                         }
                     });
                 });
-                return false;
+                e.preventDefault();
             } else {
                 var options = {
                     "type": "items",
@@ -276,8 +301,7 @@
                 if (error) {
                     alert('could not write to the database')
                 } else {
-                    loadItems(myList);
-                    window.location = "#page-main";
+                    $('#btn-load-mylist').trigger('click');
                 }
             });
         });
@@ -291,10 +315,9 @@
                 if (err) {
                     alert("Unable to delete item");
                 } else {
-                    console.log('SUCCESS');
-                    loadItems(myList);
+                    $('#btn-load-mylist').trigger('click');
+                    window.location = "#page-main";
                 }
-                window.location = "#page-main";
             });
         });
 

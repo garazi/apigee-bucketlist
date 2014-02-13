@@ -31,12 +31,6 @@
     $(function() {
         var appUser;
 
-        var ua = navigator.userAgent;
-        version = parseFloat(ua.slice(ua.indexOf("iPhone") + 10));
-        if (version >= 7) {
-            $('body').addClass('ios7');
-        }
-
         var client = new Apigee.Client({
             orgName: 'yourorgname', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
