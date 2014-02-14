@@ -211,7 +211,7 @@
                             "uuid": response._data.uuid
                         }
                         client.getEntity(options, function(error, response) {
-                            appUser.connect("myitems", item, function(error, data) {
+                            appUser.connect("myitems", response, function(error, data) {
                                 if (error) {
                                     alert("error!");
                                 } else {
