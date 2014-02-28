@@ -74,6 +74,7 @@
             if ($('#form-title').val() !== '') {
                 var newItem = {
                     'title': $('#form-title').val(),
+                    'place': $('#form-place').val(),
                     'desc': $('#form-desc').val()
                 }
                 items.addEntity(newItem, function(error, response) {
@@ -81,6 +82,7 @@
                         alert("write failed");
                     } else {
                         $('#form-title').val('');
+                        $('#form-place').val('');
                         $('#form-desc').val('');
                         loadItems();
                         window.location = "#page-main";
@@ -150,6 +152,8 @@
             <form action="" id="form-add-item" class="" style="">
                 <label for="form-title">What's on your Bucket List?</label>
                 <input id="form-title" type="text" placeholder="I am going to..." />
+                <label for="form-place">Where in the world?</label>
+                <input id="form-place" type="text" placeholder="Somewhere in the world..." />
                 <label for="form-desc">More Info:</label>
                 <textarea name="" id="form-desc" placeholder="Add any additional information here..."></textarea>
                 <input id="form-uuid" type="hidden" />

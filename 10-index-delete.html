@@ -46,7 +46,7 @@
 
         var myList = new Apigee.Collection({
             "client": client,
-            "type": "users/me/myitems",
+            "type": "users/me/wantsto",
             "qs": {
                 "limit": 25,
                 "ql": "order by title"
@@ -204,6 +204,7 @@
             if ($('#form-title').val() !== '') {
                 var newItem = {
                     'title': $('#form-title').val(),
+                    'place': $('#form-place').val(),
                     'desc': $('#form-desc').val()
                 }
                 items.addEntity(newItem, function(error, response) {
@@ -215,12 +216,13 @@
                             "uuid": response._data.uuid
                         }
                         client.getEntity(options, function(error, response) {
-                            appUser.connect("myitems", response, function(error, data) {
+                            appUser.connect("wantsto", response, function(error, data) {
                                 if (error) {
                                     alert("error!");
                                 } else {
-                                    console.log('here');
+                                    
                                     $('#form-title').val('');
+                                    $('#form-place').val('');
                                     $('#form-desc').val('');
                                     loadItems();
                                     window.location = "#page-main";
@@ -283,7 +285,7 @@
         $("#form-add-item").on('click', '#btn-forget-it', function() {
             var uuid = $('#form-uuid').val();
             var options = {
-                "endpoint": "/users/me/myitems/" + uuid,
+                "endpoint": "/users/me/wantsto/" + uuid,
                 "method": "DELETE"
             }
             client.request(options, function(err, response) {
@@ -354,6 +356,8 @@
             <form action="" id="form-add-item" class="" style="">
                 <label for="form-title">What's on your Bucket List?</label>
                 <input id="form-title" type="text" placeholder="I am going to..." />
+                <label for="form-place">Where in the world?</label>
+                <input id="form-place" type="text" placeholder="Somewhere in the world..." />
                 <label for="form-desc">More Info:</label>
                 <textarea name="" id="form-desc" placeholder="Add any additional information here..."></textarea>
                 <input id="form-uuid" type="hidden" />
