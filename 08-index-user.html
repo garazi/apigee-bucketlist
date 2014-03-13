@@ -1,6 +1,5 @@
 <!doctype html>
 <html>
-
 <head>
     <title>jQuery Mobile Page</title>
     <meta charset="utf-8">
@@ -31,7 +30,7 @@
         var appUser;
 
         var client = new Apigee.Client({
-            orgName: 'yourorgname', // Your Apigee.com username for App Services
+            orgName: 'grewis', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
         });
 
@@ -51,6 +50,8 @@
             } else {
                 if (client.isLoggedIn()) {
                     appUser = user;
+                    console.log(appUser)
+                    loadItems();
                 }
             }
         });
@@ -190,17 +191,12 @@
                     'place': $('#form-place').val(),
                     'desc': $('#form-desc').val()
                 }
-                items.addEntity(newItem, function(error, response) {
-                    if (error) {
-                        alert("write failed");
-                    } else {
-                        $('#form-title').val('');
-                        $('#form-place').val('');
-                        $('#form-desc').val('');
+                $.post("http://grewis-test.apigee.net/v1/sample/" + client.orgName + "/" + client.appName + "/items", JSON.stringify(newItem))
+                    .done(function(data, text, jqXHR) {
+                        console.log(data.uuid);
                         loadItems();
                         window.location = "#page-main";
-                    }
-                });
+                    });
             }
         });
 

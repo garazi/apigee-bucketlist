@@ -1,6 +1,5 @@
 <!doctype html>
 <html>
-
 <head>
     <title>jQuery Mobile Page</title>
     <meta charset="utf-8">
@@ -31,7 +30,7 @@
         var appUser;
 
         var client = new Apigee.Client({
-            orgName: 'yourorgname', // Your Apigee.com username for App Services
+            orgName: 'grewis', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
         });
 
@@ -70,7 +69,7 @@
         $('#header-mylist').on('click', '#btn-logout', function() {
             client.logout();
         });
-        $('form').on('click', '#btn-clear', function () {
+        $('form').on('click', '#btn-clear', function() {
             $('input').val('');
         });
 
@@ -201,32 +200,18 @@
                 var newItem = {
                     'title': $('#form-title').val(),
                     'place': $('#form-place').val(),
-                    'desc': $('#form-desc').val()
+                    'desc': $('#form-desc').val(),
+                    'appUser': appUser.serialize()
                 }
-                items.addEntity(newItem, function(error, response) {
-                    if (error) {
-                        alert("write failed");
-                    } else {
-                        var options = {
-                            "type": "items",
-                            "uuid": response._data.uuid
-                        }
-                        client.getEntity(options, function(error, response) {
-                            appUser.connect("wantsto", response, function(error, data) {
-                                if (error) {
-                                    alert("error!");
-                                } else {
-                                    
-                                    $('#form-title').val('');
-                                    $('#form-place').val('');
-                                    $('#form-desc').val('');
-                                    loadItems();
-                                    window.location = "#page-main";
-                                }
-                            });
-                        });
-                    }
-                });
+                $.post("http://localhost:3000/" + client.orgName + "/" + client.appName + "/items", JSON.stringify(newItem))
+                    .done(function(data, text, jqXHR) {
+                        console.log(data);
+                        $('#form-title').val('');
+                        $('#form-place').val('');
+                        $('#form-desc').val('');
+                        loadItems();
+                        window.location = "#page-main";
+                    });
             }
         });
 
