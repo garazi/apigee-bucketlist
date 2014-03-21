@@ -3,181 +3,211 @@
     "location": {
         "latitude": "42.817991",
         "longitude": "-1.644215"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Visit the Amazon rainforest",
     "location": {
         "latitude": "-3.1600",
         "longitude": "-60.0300"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Snorkel on the Great Barrier Reef",
     "location": {
         "latitude": "-18.2861",
         "longitude": "147.7000"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Walk on the Great Wall of China",
     "location": {
         "latitude": "40.6769",
         "longitude": "117.2319"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Visit the Taj Mahal",
     "location": {
         "latitude": "27.1742",
         "longitude": "78.0422"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Visit Machu Picchu, Peru",
     "location": {
         "latitude": "-13.1631",
         "longitude": "-72.5456"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Visit Easter Island",
     "location": {
         "latitude": "-27.1167",
         "longitude": "-109.3667"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Swim the English Channel",
     "location": {
         "latitude": "50.0000",
         "longitude": "-2.0000"
-    }
+    },
+    "public": "true"
 }, {
     "title": "African safari",
     "location": {
         "latitude": "-24.0114",
         "longitude": "31.4853"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Kiss the Blarney Stone",
     "location": {
         "latitude": "51.9291",
         "longitude": "-8.5706"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Ride the Trans-Siberian Railway",
     "location": {
         "latitude": "55.7500",
         "longitude": "37.6167"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Sail through the Panama Canal",
     "location": {
         "latitude": "9.0800",
         "longitude": "-79.6800"
-    }
+    },
+    "public": "true"
 }, {
     "title": "See the Sistine Chapel",
     "location": {
         "latitude": "41.9031",
         "longitude": "12.4544"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Visit the Louvre Museum",
     "location": {
         "latitude": "48.8611",
         "longitude": "2.3364"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Concert in the Sydney Opera House",
     "location": {
         "latitude": "-33.8587",
         "longitude": "151.2140"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Visit Saint Peter's Basilica",
     "location": {
         "latitude": "41.9022",
         "longitude": "12.4533"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Visit Mecca",
     "location": {
         "latitude": "21.4167",
         "longitude": "39.8167"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Visit the Wailing Wall",
     "location": {
         "latitude": "31.7767",
         "longitude": "35.2342"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Go to the Burning Man Festival",
     "location": {
         "latitude": "40.787568",
         "longitude": "-119.202883"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Walk the Red Carpet in Cannes",
     "location": {
         "latitude": "43.5513",
         "longitude": "7.0128"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Carnival in Rio de Janeiro",
     "location": {
         "latitude": "22.9083",
         "longitude": "-43.1964"
-    }
+    },
+    "public": "true"
 }, {
     "title": "New Years Eve on Times Square",
     "location": {
         "latitude": "40.7577",
         "longitude": "-73.9857"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Oktoberfest in Munich",
     "location": {
         "latitude": "48.1333",
         "longitude": "11.5667"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Gamble at the Monte Carlo Casino",
     "location": {
         "latitude": "43.7328",
         "longitude": "7.4197"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Attend the Oscars",
     "location": {
         "latitude": "34.09280920",
         "longitude": "-118.328661399"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Walk across the Golden Gate Bridge",
     "location": {
         "latitude": "37.8195864",
         "longitude": "-122.478532500"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Spend the weekend in Napa Valley",
     "location": {
         "latitude": "38.427431500",
         "longitude": "-122.394329900"
-    }
+    },
+    "public": "true"
 }, {
     "title": "See the Redwoods in Yosemite",
     "location": {
         "latitude": "37.86510110",
         "longitude": "-119.53832940"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Swim in the Dead Sea",
     "location": {
         "latitude": "31.500000",
         "longitude": "35.5000"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Climb Mt. Everest",
     "location": {
         "latitude": "27.9881",
         "longitude": "86.9253"
-    }
+    },
+    "public": "true"
 }, {
     "title": "Climb Mt Kilimanjaro",
     "location": {
