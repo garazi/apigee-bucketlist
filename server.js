@@ -1,9 +1,12 @@
-var express = require('express');
 var argo = require('argo');
-var usergrid = require('usergrid');
+var express = require('express');
 var request = require('request');
+var usergrid = require('usergrid');
+var router = require('argo-url-router');
 
 var app = express();
+
+console.log('Server started');
 
 var proxy = argo()
     .use(function(handle) {
@@ -64,25 +67,17 @@ var proxy = argo()
                                     console.log('entity creation went boom');
                                 } else {
                                     console.log('created entity');
-                                    env.response.statusCode = 200;
-                                    env.response.body = res._data;
                                     if (b.appUser) {
-                                        var options = {
-                                            "type": "items",
-                                            "uuid": res._data.uuid
-                                        };
-                                        client.getEntity(options, function(error, response) {
-                                            var appUser = client.restoreEntity(b.appUser);
-                                            appUser.connect("likes", response, function(error, data) {
-                                                if (error) {
-                                                    console.log("An error occured while connecting the entity");
-                                                    next(env);
-                                                } else {
-                                                    console.log('Entity connected');
-                                                    env.response.body = data;
-                                                    next(env);
-                                                }
-                                            });
+                                        var appUser = client.restoreEntity(b.appUser);
+                                        appUser.connect("likes", res, function(error, data) {
+                                            if (error) {
+                                                console.log("An error occured while connecting the entity");
+                                                next(env);
+                                            } else {
+                                                console.log('Entity connected');
+                                                env.response.body = data;
+                                                next(env);
+                                            }
                                         });
                                     } else {
                                         next(env);
@@ -97,10 +92,10 @@ var proxy = argo()
     })
     .build();
 
-app.use("/", express.static(__dirname));
+app.get('/hello', function(req, res) {
+    res.send('Hello from Express');
+});
 
 app.all('*', proxy.run);
 
-app.listen(3000, function() {
-    console.log("Server starting...");
-});
+app.listen(3000);
