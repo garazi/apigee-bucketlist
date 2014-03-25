@@ -45,89 +45,73 @@
 
         var myList = new Apigee.Collection({
             "client": client,
-            "type": "users/me/wantsto",
+            "type": "users/me/likes",
             "qs": {
                 "limit": 25,
                 "ql": "order by title"
             }
         })
 
+        // User Login 
+
         client.getLoggedInUser(function(err, data, user) {
             if (err) {
-                //error - could not get logged in user
                 window.location = "#page-login";
             } else {
                 if (client.isLoggedIn()) {
                     appUser = user;
-                    loadItems(myList);
+                    loadItems();
+                } else {
+                    window.location = "#page-login";
                 }
             }
         });
 
-        $('#form-add-user').on('click', '#btn-submit', createUser);
-        $('#form-login-user').on('click', '#btn-submit', login);
+        $('#form-add-user').on('click', '#btn-adduser-submit', createUser);
+        $('#form-login-user').on('click', '#btn-login-submit', function() {
+            var username = $("#form-username").val();
+            var password = $("#form-password").val();
+            login(username, password);
+        });
         $('#header-mylist').on('click', '#btn-logout', function() {
             client.logout();
-            $('#form-login-user #btn-submit').removeClass('hideaway');
         });
 
         function createUser() {
-            var fullname = $("#form-new-fullname").val();
-            var username = $("#form-new-username").val();
-            var password = $("#form-new-password").val();
-            var email = $("#form-new-email").val();
+            var fullname = $('#form-new-fullname').val();
+            var username = $('#form-new-username').val();
+            var password = $('#form-new-password').val();
+            var email = $('#form-new-email').val();
             client.signup(username, password, email, fullname, function(err, data) {
                 if (err) {
-                    console.log('FAIL')
+                    console.log('FAIL');
                 } else {
-                    console.log('SUCCESS');
                     login(username, password);
-                    $("#form-new-username").val('');
-                    $("#form-new-password").val('');
-                    $("#form-new-password").val('');
-                    $("#form-new-email").val('');
+                    $('#form-new-fullname').val('');
+                    $('#form-new-username').val('');
+                    $('#form-new-password').val('');
+                    $('#form-new-email').val('');
                 }
-            });
+            })
         }
 
         function login(username, password) {
             $('#login-section-error').html('');
-
-            if (username && password) {
-                var username = username;
-                var password = password;
-            } else {
-                var username = $("#form-username").val();
-                var password = $("#form-password").val();
-            }
-
-            client.login(username, password,
-                function(err) {
-                    if (err) {
-                        $('#login-section-error').html('There was an error logging you in.');
-                        console.log(err)
-                    } else {
-                        //login succeeded
-                        client.getLoggedInUser(function(err, data, user) {
-                            if (err) {
-                                //error - could not get logged in user
-                            } else {
-                                if (client.isLoggedIn()) {
-                                    appUser = user;
-                                }
-                            }
-                        });
-
-                        //clear out the login form so it is empty if the user chooses to log out
-                        $("#form-username").val('');
-                        $("#form-password").val('');
-
-                        window.location = "#page-main";
-                        loadItems(myList);
-                    }
+            client.login(username, password, function(err, data, user) {
+                if (err) {
+                    $('#login-section-error').html('There was an error logging you in.');
+                    console.log(err)
+                } else {
+                    appUser = user;
+                    $("#form-username").val('');
+                    $("#form-password").val('');
+                    window.location = "#page-main";
+                    loadItems();
                 }
-            );
+            })
         }
+
+        // End User Login
 
         navigator.geolocation.getCurrentPosition(geoSuccess, geoFailure);
 
@@ -194,7 +178,11 @@
                         populateList(collection);
                     } else {
                         populateList(collection);
-                        localStorage.setItem(collection, collection.serialize());
+                        if (collection._type == 'users/me/likes') {
+                            localStorage.setItem('myList', collection.serialize());
+                        } else {
+                            localStorage.setItem('items', collection.serialize());
+                        }
                     }
                 }
             );
@@ -220,51 +208,51 @@
             }
         });
 
-        $('form').on('click', '#btn-clear', function() {
-            $('input').val('');
+        $('form').on('click', '#btn-clear, #btn-cancel', function() {
+            $('input').each(function() {
+                $(this).val('');
+            });
         });
 
         $('#bucketlist').on('click', 'a', function(e) {
             if ($('#bucketlist').hasClass('masterList')) {
-                var options = {
-                    "type": "items",
-                    "uuid": $(this).attr('data-uuid')
-                }
-                client.getEntity(options, function(error, response) {
-                    appUser.connect("wantsto", response, function(error, data) {
-                        if (error) {
-                            alert("error!");
-                        } else {
-                            loadItems(myList);
-                            $('.masterList').removeClass('masterList');
-                        }
-                    });
+                var uuid = $(this).attr('data-uuid')
+                var temp = client.restoreCollection(localStorage.getItem('items'));
+                var entry = temp.getEntityByUUID(uuid);
+                
+                appUser.connect("likes", entry, function(error, data) {
+                    if (error) {
+                        alert("error!");
+                    } else {
+                        loadItems(myList);
+                        $('.masterList').removeClass('masterList');
+                    }
                 });
+                
                 e.preventDefault();
             } else {
-                var options = {
-                    "type": "items",
-                    "uuid": $(this).attr('data-uuid')
-                };
-                client.getEntity(options, function(error, response) {
-                    var title = response.get('title');
-                    var desc = response.get('desc');
-                    var completedby = response.get('completedby');
-                    $('#form-title').val(title);
-                    $('#form-desc').val(desc);
-                    $('#form-uuid').val(options.uuid);
-                    $('#form-completedby').val(completedby);
-                });
+                var uuid = $(this).attr('data-uuid')
+                var temp = client.restoreCollection(localStorage.getItem('items'));
+                var entry = temp.getEntityByUUID(uuid)._data;
+                
+                $('#form-title').val(entry.title);
+                $('#form-place').val(entry.place);
+                $('#form-desc').val(entry.desc);
+                $('#form-uuid').val(uuid);
+                $('#form-completedby').val(entry.completedby);
+
                 $('#btn-submit, #btn-cancel').addClass('hideaway');
                 $('#btn-did-it, #btn-forget-it').removeClass('hideaway');
             }
         });
+
         $('#header-mylist').on('click', '#btn-new', function() {
             $('#btn-submit, #btn-cancel').removeClass('hideaway');
             $('#btn-did-it, #btn-forget-it').addClass('hideaway');
             $('#form-title').val('');
             $('#form-desc').val('');
         });
+
         $('#form-add-item').on('click', '#btn-did-it', function() {
             var uuid = $('#form-uuid').val();
             var completedby = ($('#form-completedby').val()).split(',');
@@ -286,10 +274,11 @@
                 }
             });
         });
+
         $("#form-add-item").on('click', '#btn-forget-it', function() {
             var uuid = $('#form-uuid').val();
             var options = {
-                "endpoint": "/users/me/wantsto/" + uuid,
+                "endpoint": "/users/me/likes/" + uuid,
                 "method": "DELETE"
             }
             client.request(options, function(err, response) {
@@ -305,6 +294,7 @@
             loadItems(items);
             $('#bucketlist').addClass('masterList');
         });
+
         $('#app-nav').on('click', '#btn-load-mylist', function() {
             loadItems(myList);
             $('.masterList').removeClass('masterList');
@@ -389,12 +379,16 @@
         <!-- /header -->
         <article data-role="content">
             <form action="" id="form-add-user" class="" style="">
+                <label for="form-new-fullname">Full Name:</label>
+                <input id="form-new-fullname" type="text" placeholder="Enter your full name..." />
                 <label for="form-new-username">Username:</label>
                 <input id="form-new-username" type="text" placeholder="Choose a username..." />
                 <label for="form-new-password">Password:</label>
-                <textarea name="" id="form-new-password" placeholder="Choose a password"></textarea>
+                <input id="form-new-password" placeholder="Choose a password" />
+                <label for="form-new-email">Email:</label>
+                <input id="form-new-email" placeholder="Enter your email address..." />
                 <a id="btn-clear" data-role="button" data-icon="delete">Clear</a>
-                <a id="btn-submit" data-role="button" data-icon="plus">Submit</a>
+                <a id="btn-adduser-submit" data-role="button" data-icon="plus">Submit</a>
             </form>
         </article>
         <!-- /content -->
@@ -411,7 +405,7 @@
                 <label for="form-password">Password:</label>
                 <textarea name="" id="form-password" placeholder="Enter your password..."></textarea>
                 <a id="btn-clear" data-role="button" data-icon="delete">Clear</a>
-                <a id="btn-submit" data-role="button" data-icon="plus">Submit</a>
+                <a id="btn-login-submit" data-role="button" data-icon="plus">Submit</a>
                 <a id="btn-newuser" data-role="button" data-icon="user" href="#page-newuser">Create an Account</a>
             </form>
             <p id="login-section-error"></p>

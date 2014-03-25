@@ -29,7 +29,7 @@
     $(function() {
 
         var client = new Apigee.Client({
-            orgName: 'grewis', // Your Apigee.com username for App Services
+            orgName: 'yourorgname', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
         });
 
@@ -123,8 +123,10 @@
             }
         });
 
-        $('form').on('click', '#btn-clear', function() {
-            $('input').val('');
+        $('form').on('click', '#btn-clear, #btn-cancel', function() {
+            $('input').each(function () {
+                $(this).val('');
+            });
         });
 
     });

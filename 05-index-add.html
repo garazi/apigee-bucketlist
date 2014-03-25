@@ -85,8 +85,10 @@
             }
         });
 
-        $('form').on('click', '#btn-clear', function() {
-            $('input').val('');
+        $('form').on('click', '#btn-clear, #btn-cancel', function() {
+            $('input').each(function () {
+                $(this).val('');
+            });
         });
         
     });

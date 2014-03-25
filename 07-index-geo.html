@@ -62,12 +62,11 @@
 
         function geoFailure() {
             alert("Unable to access your geolocation");
-
             // The following is just for testing locally in Chrome
             // that doesn't support geolocation from a file:// address
             my_location = {
-                "latitude": "37.3649353"
-                "longitude": "-121.9082595"
+                "latitude": 37.3332694,
+                "longitude": -121.8942419
             }
             items = new Apigee.Collection({
                 "client": client,
@@ -128,8 +127,10 @@
             }
         });
 
-        $('form').on('click', '#btn-clear', function() {
-            $('input').val('');
+        $('form').on('click', '#btn-clear, #btn-cancel', function() {
+            $('input').each(function () {
+                $(this).val('');
+            });
         });
         
     });

@@ -30,7 +30,7 @@
         var appUser;
 
         var client = new Apigee.Client({
-            orgName: 'grewis', // Your Apigee.com username for App Services
+            orgName: 'yourorgname', // Your Apigee.com username for App Services
             appName: 'sandbox' // Your Apigee App Services app name
         });
 
@@ -43,81 +43,66 @@
             }
         });
 
+        // User Login 
+
         client.getLoggedInUser(function(err, data, user) {
             if (err) {
-                //error - could not get logged in user
                 window.location = "#page-login";
             } else {
                 if (client.isLoggedIn()) {
                     appUser = user;
-                    console.log(appUser)
                     loadItems();
+                } else {
+                    window.location = "#page-login";
                 }
             }
         });
 
-        $('#form-add-user').on('click', '#btn-submit', createUser);
-        $('#form-login-user').on('click', '#btn-submit', login);
+        $('#form-add-user').on('click', '#btn-adduser-submit', createUser);
+        $('#form-login-user').on('click', '#btn-login-submit', function() {
+            var username = $("#form-username").val();
+            var password = $("#form-password").val();
+            login(username, password);
+        });
         $('#header-mylist').on('click', '#btn-logout', function() {
             client.logout();
         });
-        $('form').on('click', '#btn-clear', function () {
-            $('input').val('');
-        });
 
         function createUser() {
-            var fullname = $("#form-new-fullname").val();
-            var username = $("#form-new-username").val();
-            var password = $("#form-new-password").val();
-            var email = $("#form-new-email").val();
+            var fullname = $('#form-new-fullname').val();
+            var username = $('#form-new-username').val();
+            var password = $('#form-new-password').val();
+            var email = $('#form-new-email').val();
             client.signup(username, password, email, fullname, function(err, data) {
                 if (err) {
-                    console.log('FAIL')
+                    console.log('FAIL');
                 } else {
-                    console.log('SUCCESS');
                     login(username, password);
-                    $("#form-new-username").val('');
-                    $("#form-new-password").val('');
-                    $("#form-new-password").val('');
-                    $("#form-new-email").val('');
+                    $('#form-new-fullname').val('');
+                    $('#form-new-username').val('');
+                    $('#form-new-password').val('');
+                    $('#form-new-email').val('');
                 }
-            });
+            })
         }
 
         function login(username, password) {
             $('#login-section-error').html('');
-            if (username && password) { // if the user has just signed up, we are passing their username and password
-                var username = username;
-                var password = password;
-            } else {
-                var username = $("#form-username").val();
-                var password = $("#form-password").val();
-            }
-            client.login(username, password,
-                function(err) {
-                    if (err) {
-                        $('#login-section-error').html('There was an error logging you in.');
-                        console.log(err)
-                    } else {
-                        //login succeeded
-                        client.getLoggedInUser(function(err, user) {
-                            if (err) {
-                                //error - could not get logged in user
-                            } else {
-                                if (client.isLoggedIn()) {
-                                    appUser = user;
-                                }
-                            }
-                        });
-                        //clear out the login form so it is empty if the user chooses to log out
-                        $("#form-username").val('');
-                        $("#form-password").val('');
-                        window.location = "#page-main";
-                        loadItems();
-                    }
+            client.login(username, password, function(err, data, user) {
+                if (err) {
+                    $('#login-section-error').html('There was an error logging you in.');
+                    console.log(err)
+                } else {
+                    appUser = user;
+                    $("#form-username").val('');
+                    $("#form-password").val('');
+                    window.location = "#page-main";
+                    loadItems();
                 }
-            );
+            })
         }
+
+        // End User Login
 
         navigator.geolocation.getCurrentPosition(geoSuccess, geoFailure);
 
@@ -200,10 +185,12 @@
             }
         });
 
-        $('form').on('click', '#btn-clear', function() {
-            $('input').val('');
+        $('form').on('click', '#btn-clear, #btn-cancel', function() {
+            $('input').each(function () {
+                $(this).val('');
+            });
         });
-        
+
     });
     </script>
 </head>
@@ -290,7 +277,7 @@
                 <label for="form-new-email">Email:</label>
                 <input id="form-new-email" placeholder="Enter your email address..." />
                 <a id="btn-clear" data-role="button" data-icon="delete">Clear</a>
-                <a id="btn-submit" data-role="button" data-icon="plus">Submit</a>
+                <a id="btn-adduser-submit" data-role="button" data-icon="plus">Submit</a>
             </form>
         </article>
         <!-- /content -->
@@ -307,7 +294,7 @@
                 <label for="form-password">Password:</label>
                 <textarea name="" id="form-password" placeholder="Enter your password..."></textarea>
                 <a id="btn-clear" data-role="button" data-icon="delete">Clear</a>
-                <a id="btn-submit" data-role="button" data-icon="plus">Submit</a>
+                <a id="btn-login-submit" data-role="button" data-icon="plus">Submit</a>
                 <a id="btn-newuser" data-role="button" data-icon="user" href="#page-newuser">Create an Account</a>
             </form>
             <p id="login-section-error"></p>
