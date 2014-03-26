@@ -2,7 +2,6 @@ var argo = require('argo');
 var express = require('express');
 var request = require('request');
 var usergrid = require('usergrid');
-var router = require('argo-url-router');
 
 var app = express();
 
@@ -98,4 +97,6 @@ app.get('/hello', function(req, res) {
 
 app.all('*', proxy.run);
 
-app.listen(3000);
+app.listen(3000, function () {
+    console.log("Server starting...");
+});
