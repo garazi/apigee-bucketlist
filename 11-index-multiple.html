@@ -164,6 +164,7 @@
             $('.masterList li').attr('data-icon', 'expand-alt');
             $('.masterList li.done').addClass('hideaway');
             $('#bucketlist').listview('refresh');
+            $.mobile.loading("hide");
         }
 
         // loadItems();
@@ -290,15 +291,26 @@
             });
         });
 
+        function loader() {
+            $.mobile.loading("show", {
+                textVisible: false,
+                html: ""
+            });
+        }
+
         $('#app-nav').on('click', '#btn-load-inspiration', function() {
+            loader();
             loadItems(items);
             $('#bucketlist').addClass('masterList');
         });
 
         $('#app-nav').on('click', '#btn-load-mylist', function() {
+            loader();
             loadItems(myList);
             $('.masterList').removeClass('masterList');
         });
+
+        $('#btn-load-mylist').addClass('ui-btn-active');
     });
     </script>
 </head>
