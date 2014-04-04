@@ -203,7 +203,7 @@
                     'desc': $('#form-desc').val(),
                     'appUser': appUser.serialize()
                 }
-                $.post("http://localhost:3000/" + client.orgName + "/" + client.appName + "/items", JSON.stringify(newItem))
+                $.post("http://grewis-test.apigee.net/v1/bucketlist/" + client.orgName + "/" + client.appName + "/items", JSON.stringify(newItem))
                     .done(function(data, text, jqXHR) {
                         console.log(data);
                         $('#form-title').val('');
