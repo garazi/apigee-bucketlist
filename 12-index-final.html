@@ -30,7 +30,7 @@
         var appUser;
 
         var ua = navigator.userAgent;
-        version = parseFloat(ua.slice(ua.indexOf("iPhone") + 10));
+        version = parseFloat(ua.slice(ua.indexOf("iPhone OS") + 10));
         if (version >= 7) {
             $('body').addClass('ios7');
         }
