@@ -60,7 +60,7 @@
             } else {
                 if (client.isLoggedIn()) {
                     appUser = user;
-                    loadItems();
+                    loadItems(myList);
                 } else {
                     window.location = "#page-login";
                 }
@@ -106,7 +106,7 @@
                     $("#form-username").val('');
                     $("#form-password").val('');
                     window.location = "#page-main";
-                    loadItems();
+                    loadItems(myList);
                 }
             })
         }
@@ -203,7 +203,7 @@
                         $('#form-title').val('');
                         $('#form-place').val('');
                         $('#form-desc').val('');
-                        loadItems();
+                        loadItems(myList);
                         window.location = "#page-main";
                     });
             }
