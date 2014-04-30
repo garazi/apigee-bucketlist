@@ -83,12 +83,22 @@ footer {
     width: 100%;
     border-spacing: 2px;
 }
-#btn-cancel, #btn-submit, #btn-clear, #btn-newuser, #btn-did-it, #btn-forget-it, #btn-login-cancel, #btn-login-submit, #btn-login-newuser {
+#btn-cancel, #btn-submit, #btn-clear, #btn-newuser, #btn-did-it, #btn-forget-it, #btn-login-cancel, #btn-login-submit, #btn-login-newuser, #btn-adduser-submit {
     border: 1px solid rgb(255, 67, 0);
     margin: 2px auto;
     width: 100%;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
+}
+#app-nav .ui-checkbox input, .ui-radio input {
+position: absolute;
+left: -2000px;
+top: 50%;
+width: 10px;
+height: 10px;
+margin: -5px 0 0 0;
+outline: 0!important;
+z-index: 1;
 }
 #btn-cancel, #btn-did-it {
     margin: 30px 0 0;
