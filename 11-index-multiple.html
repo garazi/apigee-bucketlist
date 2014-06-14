@@ -203,8 +203,9 @@
                         $('#form-title').val('');
                         $('#form-place').val('');
                         $('#form-desc').val('');
-                        loadItems(myList);
+                        $('#btn-load-mylist').trigger('click');
                         window.location = "#page-main";
+                        $('#btn-load-mylist').addClass('ui-btn-active');
                     });
             }
         });
@@ -227,13 +228,14 @@
                     } else {
                         loadItems(myList);
                         $('.masterList').removeClass('masterList');
+                        $('#btn-load-mylist').addClass('ui-btn-active');
                     }
                 });
                 
                 e.preventDefault();
             } else {
                 var uuid = $(this).attr('data-uuid')
-                var temp = client.restoreCollection(localStorage.getItem('items'));
+                var temp = client.restoreCollection(localStorage.getItem('myList'));
                 var entry = temp.getEntityByUUID(uuid)._data;
                 
                 $('#form-title').val(entry.title);
@@ -251,6 +253,7 @@
             $('#btn-submit, #btn-cancel').removeClass('hideaway');
             $('#btn-did-it, #btn-forget-it').addClass('hideaway');
             $('#form-title').val('');
+            $('#form-place').val('');
             $('#form-desc').val('');
         });
 
